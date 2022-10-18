@@ -1,0 +1,39 @@
+.photo {
+    height: 180px;
+    width: 180px;
+}
+
+form {
+    background: #55acf3;
+    padding: 1.5em;
+    border-radius: 1em;
+}
+
+.center {
+    display: inline-flex;
+    padding-top: 100px;
+    justify-content: center;
+    align-items: center;
+    vertical-align: center;
+    horiz-align: center;
+
+}
+
+.error-message {
+    margin-top: 1em;
+    color: red;
+}
+
+.dropzoneStyle {
+    position : relative;
+    width : 50%;
+    height: 100%;
+}
+
+.dropzoneText {
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
