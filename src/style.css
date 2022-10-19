@@ -8,6 +8,11 @@ form {
     padding: 1.5em;
     border-radius: 1em;
 }
+.random-image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
 
 .center {
     display: inline-flex;
@@ -16,7 +21,10 @@ form {
     align-items: center;
     vertical-align: center;
     horiz-align: center;
-
+}
+.example {
+    text-align: center;
+    border: solid;
 }
 
 .error-message {
