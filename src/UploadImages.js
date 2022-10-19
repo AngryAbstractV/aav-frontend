@@ -92,6 +92,7 @@ export default function UploadImages() {
                                 <div {...getRootProps()}>
                                     <input {...getInputProps()} />
                                     <p>Let me tell you how to feel</p>
+                                    <img src={currentImage} alt={"current_img"}/>
                                 </div>
                             </section>
                         )}
