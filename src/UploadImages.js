@@ -3,6 +3,17 @@ import "./style.css"
 import * as tf from "@tensorflow/tfjs";
 import {Backdrop, Chip, CircularProgress, Grid, Stack} from "@mui/material";
 import Dropzone from 'react-dropzone'
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
 
 
 
@@ -10,6 +21,20 @@ export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
     const [images, setImages] = useState([]);
+
+    const [data, setData] = useState({
+        labels: ["awe", "anger", "amusement", "contentment", "disgust",
+            "fear", "sadness", "excitement"],
+        datasets: [
+            {
+                label: "Confidence",
+                data: [0,0,0,0,0,0,0,0],
+                fill: true,
+                backgroundColor: "rgba(6, 156,51, .3)",
+                borderColor: "#02b844",
+            }
+        ]
+    })
 
 
     useEffect(() => {
@@ -53,9 +78,7 @@ export default function UploadImages() {
     const createHTMLImageElement = (imageSrc) => {
         return new Promise((resolve) => {
             const img = new Image();
-
             img.onload = () => resolve(img);
-
             img.src = imageSrc;
         });
     };
@@ -77,17 +100,58 @@ export default function UploadImages() {
                 const predictions = result.dataSync();
                 const predicted_index = result.as1D().argMax().dataSync()[0];
                 const predictedClass = classLabels[predicted_index];
+                setData({
+                    labels: ["awe", "anger", "amusement", "contentment", "disgust",
+                        "fear", "sadness", "excitement"],
+                    datasets: [
+                        {
+                            label: "Confidence",
+                            data: predictions,
+                            fill: true,
+                            backgroundColor: "rgba(6, 156,51, .3)",
+                            borderColor: "#02b844",
+                        }
+                    ]
+                })
                 console.log(predictions)
                 console.log(predicted_index)
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 return [predictedClass, confidence];
             });
+
             setPredictedClass(predictedClass);
             setConfidence(confidence);
             setLoading(false);
         }
     };
+    ChartJS.register(
+        CategoryScale,
+        LinearScale,
+        BarElement,
+        Title,
+        Tooltip,
+        Legend
+    );
 
+     const options = {
+        indexAxis: 'y',
+        elements: {
+            bar: {
+                borderWidth: 1,
+            },
+        },
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right',
+            },
+            title: {
+                display: true,
+                text: "Tommy's brain",
+            },
+        },
+         maintainAspectRatio: true,
+    };
 
     return (
         <Fragment>
@@ -120,6 +184,10 @@ export default function UploadImages() {
                         />
                     </Stack>
                 </Grid>
+                <div className={"chart"}>
+                    <Bar options={options} data={data}/>
+
+                </div>
             </Grid>
             <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
                 <CircularProgress color="inherit" />
