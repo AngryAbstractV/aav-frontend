@@ -8,40 +8,42 @@ form {
     padding: 1.5em;
     border-radius: 1em;
 }
-.random-image {
-    height: 100%;
-    width: 100%;
+.chart {
+    display: inline-flex;
+    horiz-align: center;
+    vertical-align: center;
+    height: 500px;
+    width: 500px;
     object-fit: contain;
 }
 
 .center {
     display: inline-flex;
-    padding-top: 100px;
+    padding-top: 50px;
     justify-content: center;
     align-items: center;
     vertical-align: center;
     horiz-align: center;
 }
-.example {
-    text-align: center;
-    border: solid;
-}
+
 
 .error-message {
     margin-top: 1em;
     color: red;
 }
 
-.dropzoneStyle {
-    position : relative;
-    width : 50%;
-    height: 100%;
+.fileDrop {
+    background: #f5f5f5;
+    border: 1px dashed #c2c2c2;
+    border-radius: 3px;
+    text-align: center;
+    padding: 36px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-.dropzoneText {
-    display : flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+.fileDrop:hover {
+    background: rgb(194, 243, 194);
+    border: 1px dashed #333;
 }
-
