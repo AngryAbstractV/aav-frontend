@@ -165,6 +165,7 @@ export default function UploadImages() {
                                     <input {...getInputProps()} />
                                     <p className={'fileDrop'}>Drop or click to input an image</p>
                                 </div>
+                                </div>
                             </section>
                         )}
                     </Dropzone>
