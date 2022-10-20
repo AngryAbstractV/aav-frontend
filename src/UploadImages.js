@@ -39,9 +39,11 @@ export default function UploadImages() {
 
     useEffect(() => {
         const loadModel = async () => {
+            setLoading(true)
             const model_url = "https://paintingemotion.s3.us-west-2.amazonaws.com/model.json";
             const model = await tf.loadLayersModel(model_url);
             setModel(model);
+            setLoading(false)
         };
         const getClassLabels = async () => {
             const testLabel = ["awe", "anger", "amusement", "contentment", "disgust",
