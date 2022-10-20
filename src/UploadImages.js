@@ -9,6 +9,7 @@ import Dropzone from 'react-dropzone'
 export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
+    const [images, setImages] = useState([]);
 
 
     useEffect(() => {
@@ -24,9 +25,17 @@ export default function UploadImages() {
         };
         loadModel();
         getClassLabels();
-    }, []);
+        if (images.length < 1){
+            return
+        }
+        const newImageUrls = [];
+        images.forEach(image => newImageUrls.push(URL.createObjectURL(image)))
+        setImageURLs(newImageUrls)
+    }, [images]);
 
-    const [currentImage, setImage] = useState(null);
+
+
+    const [imageURLs, setImageURLs] = useState([])
     const [loading, setLoading] = useState(false);
     const [confidence, setConfidence] = useState(null);
     const [predictedClass, setPredictedClass] = useState(null);
@@ -35,9 +44,7 @@ export default function UploadImages() {
     const readImageFile = (file) => {
         return new Promise((resolve) => {
             const reader = new FileReader();
-
             reader.onload = () => resolve(reader.result);
-
             reader.readAsDataURL(file);
         });
     };
@@ -60,17 +67,18 @@ export default function UploadImages() {
             setPredictedClass(null);
         }
         if (files.length === 1) {
-            setImage(files[0])
+            setImages(files)
             setLoading(true);
             const imageSrc = await readImageFile(files[0]);
             const image = await createHTMLImageElement(imageSrc);
-            setImage(image)
             const [predictedClass, confidence] = tf.tidy(() => {
                 const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
                 const result = model.predict(tensorImg);
                 const predictions = result.dataSync();
                 const predicted_index = result.as1D().argMax().dataSync()[0];
                 const predictedClass = classLabels[predicted_index];
+                console.log(predictions)
+                console.log(predicted_index)
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 return [predictedClass, confidence];
             });
@@ -86,16 +94,19 @@ export default function UploadImages() {
             <Grid container className="App" direction="column" alignItems="center" justifyContent="center" marginTop="12%">
                 <Grid item>
                     <h1 style={{ textAlign: "center", marginBottom: "1.5em" }}>Emotion Analyzer</h1>
-                    <Dropzone onDrop={acceptedFiles => handleImageChange(acceptedFiles)}>
+                    <Dropzone  multiple={false} onDrop={acceptedFiles => handleImageChange(acceptedFiles)}>
                         {({getRootProps, getInputProps}) => (
                             <section>
                                 <div {...getRootProps()}>
                                     <input {...getInputProps()} />
-                                    <p>Let me tell you how to feel</p>
+                                    <p className={'fileDrop'}>Drop or click to input an image</p>
                                 </div>
                             </section>
                         )}
                     </Dropzone>
+                    <div>
+                        { imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc}  alt={"current_image"}/>)}
+                    </div>
                     <Stack style={{ marginTop: "2em", width: "12rem" }} direction="row" spacing={1}>
                         <Chip
                             label={predictedClass === null ? "Prediction:" : `Prediction: ${predictedClass}`}
