@@ -1,26 +1,22 @@
-import React, {useState, useEffect, Fragment} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import "./style.css"
 import * as tf from "@tensorflow/tfjs";
 import {Backdrop, Chip, CircularProgress, Grid, Stack} from "@mui/material";
 import Dropzone from 'react-dropzone'
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-
-
+import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip,} from 'chart.js';
+import {Bar} from 'react-chartjs-2';
+import axios from 'axios'
 
 
 export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
     const [images, setImages] = useState([]);
+    const [loadingModel, setLoadingModel] = useState(false)
+    const [imageURLs, setImageURLs] = useState([])
+    const [loading, setLoading] = useState(false);
+    const [confidence, setConfidence] = useState(null);
+    const [predictedClass, setPredictedClass] = useState(null);
 
     const [mlData, setMlData] = useState({
         labels: ["awe", "anger", "amusement", "contentment", "disgust",
@@ -28,7 +24,7 @@ export default function UploadImages() {
         datasets: [
             {
                 label: "Confidence",
-                data: [0,0,0,0,0,0,0,0],
+                data: [0, 0, 0, 0, 0, 0, 0, 0],
                 fill: true,
                 backgroundColor: "rgba(6, 156,51, .3)",
                 borderColor: "#02b844",
@@ -42,7 +38,7 @@ export default function UploadImages() {
         datasets: [
             {
                 label: "Confidence",
-                data: [0,0,0,0,0,0,0,0],
+                data: [0, 0, 0, 0, 0, 0, 0, 0],
                 fill: true,
                 backgroundColor: "rgba(6, 156,51, .3)",
                 borderColor: "#02b844",
@@ -68,20 +64,14 @@ export default function UploadImages() {
         };
         loadModel();
         getClassLabels();
-        if (images.length < 1){
+        if (images.length < 1) {
             return
         }
         const newImageUrls = [];
         images.forEach(image => newImageUrls.push(URL.createObjectURL(image)))
         setImageURLs(newImageUrls)
-    }, [images]);
+    },[images]);
 
-
-    const [loadingModel, setLoadingModel] = useState(false)
-    const [imageURLs, setImageURLs] = useState([])
-    const [loading, setLoading] = useState(false);
-    const [confidence, setConfidence] = useState(null);
-    const [predictedClass, setPredictedClass] = useState(null);
 
 
     const readImageFile = (file) => {
@@ -102,6 +92,7 @@ export default function UploadImages() {
     };
 
 
+
     const handleImageChange = async (files) => {
         if (files.length === 0) {
             setConfidence(null);
@@ -112,12 +103,15 @@ export default function UploadImages() {
             setLoading(true);
             const imageSrc = await readImageFile(files[0]);
             const image = await createHTMLImageElement(imageSrc);
-            const [predictedClass, confidence] = tf.tidy(() => {
+            const [predictedClass, confidence] = tf.tidy(async () => {
                 const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
                 const result = model.predict(tensorImg);
                 const predictions = result.dataSync();
                 const predicted_index = result.as1D().argMax().dataSync()[0];
                 const predictedClass = classLabels[predicted_index];
+
+                const test = await axios("https://aav-processing.herokuapp.com/")
+
                 setMlData({
                     labels: ["awe", "anger", "amusement", "contentment", "disgust",
                         "fear", "sadness", "excitement"],
@@ -137,16 +131,16 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
-                            data: [0,0,0,0,0,0,0,0],
+                            data: test.data.Scores,
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
                             borderColor: "#02b844",
                         }
                     ]
                 })
-                console.log(predictions)
-                console.log(predicted_index)
                 const confidence = Math.round(predictions[predicted_index] * 100);
+                setPredictedClass(predictedClass);
+                setConfidence(confidence);
                 return [predictedClass, confidence];
             });
 
@@ -164,7 +158,7 @@ export default function UploadImages() {
         Legend
     );
 
-     const optionsML = {
+    const optionsML = {
         indexAxis: 'y',
         elements: {
             bar: {
@@ -181,8 +175,8 @@ export default function UploadImages() {
                 text: "CNN Model",
             },
         },
-         maintainAspectRatio: true,
-         margin: 0
+        maintainAspectRatio: true,
+        margin: 0
     };
 
     const optionsIP = {
@@ -208,10 +202,11 @@ export default function UploadImages() {
 
     return (
         <Fragment>
-            <Grid container className="App" direction="column" alignItems="center" justifyContent="center" marginTop="5%">
+            <Grid container className="App" direction="column" alignItems="center" justifyContent="center"
+                  marginTop="5%">
                 <Grid item>
-                    <h1 style={{ textAlign: "center"}}>Emotion Analyzer</h1>
-                    <Dropzone  multiple={false} onDrop={acceptedFiles => handleImageChange(acceptedFiles)}>
+                    <h1 style={{textAlign: "center"}}>Emotion Analyzer</h1>
+                    <Dropzone multiple={false} onDrop={acceptedFiles => handleImageChange(acceptedFiles)}>
                         {({getRootProps, getInputProps}) => (
                             <section>
                                 <div {...getRootProps()}>
@@ -222,19 +217,19 @@ export default function UploadImages() {
                         )}
                     </Dropzone>
                     <div>
-                        { imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc}  alt={"current_image"}/>)}
+                        {imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc} alt={"current_image"}/>)}
                     </div>
-                    <text className={"center"}>Combined Prediction</text>
+                    <text className={"center"}>CSV Chart is not real data currently! Enjoy some fake data</text>
 
-                    <Stack style={{ marginTop: "3em", width: "15rem" }} direction="row" spacing={2}>
+                    <Stack style={{marginTop: "3em", width: "15rem"}} direction="row" spacing={2}>
                         <Chip
                             label={predictedClass === null ? "Prediction:" : `Prediction: ${predictedClass}`}
-                            style={{ justifyContent: "left" }}
+                            style={{justifyContent: "left"}}
                             variant="outlined"
                         />
                         <Chip
                             label={confidence === null ? "Confidence:" : `Confidence: ${confidence}%`}
-                            style={{ justifyContent: "left" }}
+                            style={{justifyContent: "left"}}
                             variant="outlined"
                         />
                     </Stack>
@@ -249,9 +244,9 @@ export default function UploadImages() {
                 </div>
 
             </Grid>
-            <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+            <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loading}>
                 {loadingModel ? "Loading Model" : "Using Model"}
-                <CircularProgress color="inherit" />
+                <CircularProgress color="inherit"/>
             </Backdrop>
             <text className={"center"}>AAV-Team for CS4360</text>
         </Fragment>
