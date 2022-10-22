@@ -17,6 +17,10 @@ form {
     object-fit: contain;
 }
 
+.chart_container {
+    float: left;
+}
+
 .center {
     display: inline-flex;
     padding-top: 50px;
