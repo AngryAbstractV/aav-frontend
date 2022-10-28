@@ -103,6 +103,37 @@ export default function UploadImages() {
             setLoading(true);
             const imageSrc = await readImageFile(files[0]);
             const image = await createHTMLImageElement(imageSrc);
+
+            /* Testing api */
+            let formData = new FormData();
+            formData.append("file", files[0] ? files[0] : null);
+            // const response = await fetch('http://127.0.0.1:5000/upload', {
+            // method: 'POST',
+            // body: formData})
+            let response = await axios('http://127.0.0.1:5000/upload', {
+                method: 'POST',
+                data: formData
+            })
+            response = response.data 
+
+            console.log(response)
+            // formData = new FormData();
+            // formData.append('username', 'Kareem');
+            // const response = await axios.post('http://127.0.0.1:8000/test', {
+            //     method: 'POST',
+            //     data: formData
+            // }
+            // console.log(response)
+
+            // let form_data = new FormData();
+            // console.log(files[0])
+            // form_data.append('file', files[0].originFileObj);
+            // let url = 'http://127.0.0.1:5000/upload';
+            // axios.post(url, form_data, {
+            //     headers: {
+            //       'content-type': 'multipart/form-data'
+            //     }
+            //   })
             const [predictedClass, confidence] = tf.tidy(async () => {
                 const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
                 const result = model.predict(tensorImg);
@@ -110,7 +141,7 @@ export default function UploadImages() {
                 const predicted_index = result.as1D().argMax().dataSync()[0];
                 const predictedClass = classLabels[predicted_index];
 
-                const test = await axios("https://aav-processing.herokuapp.com/")
+                const test = await axios("http://127.0.0.1:5000 ")
 
                 setMlData({
                     labels: ["awe", "anger", "amusement", "contentment", "disgust",
