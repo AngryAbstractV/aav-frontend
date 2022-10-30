@@ -1,12 +1,16 @@
 .photo {
     height: 180px;
     width: 180px;
+    min-height: 100%
+
 }
 
 form {
     background: #55acf3;
     padding: 1.5em;
     border-radius: 1em;
+    min-height: 100%
+
 }
 .chart {
     display: inline-flex;
@@ -15,6 +19,8 @@ form {
     height: 500px;
     width: 500px;
     object-fit: contain;
+    min-height: 100%
+
 }
 
 .chart_container {
@@ -28,6 +34,7 @@ form {
     align-items: center;
     vertical-align: center;
     horiz-align: center;
+    min-height: 100%
 }
 
 
@@ -45,9 +52,13 @@ form {
     font-family: "Montserrat", sans-serif;
     font-size: 12px;
     font-weight: 600;
+    min-height: 100%
+
 }
 
 .fileDrop:hover {
     background: rgb(194, 243, 194);
     border: 1px dashed #333;
+    min-height: 100%
+
 }

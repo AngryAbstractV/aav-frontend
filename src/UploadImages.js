@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from "react";
 import "./style.css"
 import * as tf from "@tensorflow/tfjs";
-import {Backdrop, Chip, CircularProgress, Grid, Link, Stack} from "@mui/material";
+import {Backdrop, Chip, CircularProgress, Grid, Stack} from "@mui/material";
 import Dropzone from 'react-dropzone'
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip,} from 'chart.js';
 import {Bar} from 'react-chartjs-2';
@@ -140,12 +140,12 @@ export default function UploadImages() {
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
-                setLoading(false);
                 return [predictedClass, confidence];
             });
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
         }
+        setLoading(false);
     };
 
     ChartJS.register(
@@ -244,15 +244,13 @@ export default function UploadImages() {
                         <Bar options={optionsIP} data={ipData}/>
                     </div>
                 </div>
-                <Link to ='https://github.com/AngryAbstractV' className={'center'}>Github Repo</Link>
-                <text className={"center"}>AAV-Team for CS4360</text>
-
+                <a href='https://github.com/AngryAbstractV'>Github Repo</a>
+                <text>AAV-Team for CS4360</text>
             </Grid>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loading}>
                 {loadingModel ? "Loading Model" : "Using Model"}
                 <CircularProgress color="inherit"/>
             </Backdrop>
-
         </Fragment>
     );
 }
