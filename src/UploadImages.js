@@ -145,6 +145,11 @@ export default function UploadImages() {
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
         }
+        while(mlData.datasets.length <= 0){
+            console.log(mlData)
+            console.log(ipData)
+            setLoading(true)
+        }
         setLoading(false);
     };
 
