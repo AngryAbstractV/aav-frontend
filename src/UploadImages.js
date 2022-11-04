@@ -19,8 +19,7 @@ export default function UploadImages() {
     const [predictedClassState, setPredictedClassState] = useState(null);
 
     const [mlData, setMlData] = useState({
-        labels: ["awe", "anger", "amusement", "contentment", "disgust",
-            "fear", "sadness", "excitement"],
+        labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
         datasets: [
             {
                 label: "Confidence",
@@ -33,8 +32,7 @@ export default function UploadImages() {
     })
 
     const [ipData, setIpData] = useState({
-        labels: ["awe", "anger", "amusement", "contentment", "disgust",
-            "fear", "sadness", "excitement"],
+        labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
         datasets: [
             {
                 label: "Confidence",
@@ -58,8 +56,7 @@ export default function UploadImages() {
             setLoadingModel(false)
         };
         const getClassLabels = async () => {
-            const testLabel = ["awe", "anger", "amusement", "contentment", "disgust",
-                "fear", "sadness", "excitement"]
+            const testLabel = ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness']
             setClassLabels(testLabel);
         };
         loadModel();
@@ -112,8 +109,7 @@ export default function UploadImages() {
                 const test = await axios("https://aav-processing.herokuapp.com/")
 
                 setMlData({
-                    labels: ["awe", "anger", "amusement", "contentment", "disgust",
-                        "fear", "sadness", "excitement"],
+                    labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
                     datasets: [
                         {
                             label: "Confidence",
@@ -125,8 +121,7 @@ export default function UploadImages() {
                     ]
                 })
                 setIpData({
-                    labels: ["awe", "anger", "amusement", "contentment", "disgust",
-                        "fear", "sadness", "excitement"],
+                    labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
                     datasets: [
                         {
                             label: "Confidence",
