@@ -110,7 +110,7 @@ export default function UploadImages() {
             // const response = await fetch('http://127.0.0.1:5000/upload', {
             // method: 'POST',
             // body: formData})
-            let response = await axios('http://127.0.0.1:5000/upload', {
+            let response = await axios('"https://aav-processing.herokuapp.com/upload', {
                 method: 'POST',
                 data: formData
             })
@@ -125,7 +125,7 @@ export default function UploadImages() {
                 const predicted_index = result.as1D().argMax().dataSync()[0];
                 const predictedClass = classLabels[predicted_index];
 
-                const test = await axios("http://127.0.0.1:5000 ")
+                const test = await axios("https://aav-processing.herokuapp.com/")
 
                 setMlData({
                     labels: ["awe", "anger", "amusement", "contentment", "disgust",
