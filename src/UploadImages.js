@@ -125,7 +125,6 @@ export default function UploadImages() {
                 const predicted_index = result.as1D().argMax().dataSync()[0];
                 const predictedClass = classLabels[predicted_index];
 
-                const test = await axios("https://aav-processing.herokuapp.com/")
 
                 setMlData({
                     labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
