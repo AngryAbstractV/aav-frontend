@@ -20,7 +20,7 @@ export default function UploadImages() {
 
     const [mlData, setMlData] = useState({
         labels: ["awe", "anger", "amusement", "contentment", "disgust",
-            "fear", "sadness", "excitement"],
+        "excitement","fear", "sadness"],
         datasets: [
             {
                 label: "Confidence",
