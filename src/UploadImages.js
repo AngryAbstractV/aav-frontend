@@ -19,7 +19,11 @@ export default function UploadImages() {
     const [predictedClassState, setPredictedClassState] = useState(null);
 
     const [mlData, setMlData] = useState({
+
+
+
         labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
+
         datasets: [
             {
                 label: "Confidence",
@@ -99,6 +103,21 @@ export default function UploadImages() {
             setLoading(true);
             const imageSrc = await readImageFile(files[0]);
             const image = await createHTMLImageElement(imageSrc);
+
+            /* Testing api */
+            let formData = new FormData();
+            formData.append("file", files[0] ? files[0] : null);
+            // const response = await fetch('http://127.0.0.1:5000/upload', {
+            // method: 'POST',
+            // body: formData})
+            let response = await axios('"https://aav-processing.herokuapp.com/upload', {
+                method: 'POST',
+                data: formData
+            })
+            response = response.data 
+
+            console.log(response)
+            
             const [predictedClass, confidence] = tf.tidy(async () => {
                 const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
                 const result = model.predict(tensorImg);
