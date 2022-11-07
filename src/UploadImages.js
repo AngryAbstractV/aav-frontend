@@ -15,12 +15,15 @@ export default function UploadImages() {
     const [loadingModel, setLoadingModel] = useState(false)
     const [imageURLs, setImageURLs] = useState([])
     const [loading, setLoading] = useState(false);
-    const [confidence, setConfidence] = useState(null);
-    const [predictedClass, setPredictedClass] = useState(null);
+    const [confidenceState, setConfidenceState] = useState(null);
+    const [predictedClassState, setPredictedClassState] = useState(null);
 
     const [mlData, setMlData] = useState({
-        labels: ["awe", "anger", "amusement", "contentment", "disgust",
-        "excitement","fear", "sadness"],
+
+
+
+        labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
+
         datasets: [
             {
                 label: "Confidence",
@@ -33,8 +36,7 @@ export default function UploadImages() {
     })
 
     const [ipData, setIpData] = useState({
-        labels: ["awe", "anger", "amusement", "contentment", "disgust",
-            "fear", "sadness", "excitement"],
+        labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
         datasets: [
             {
                 label: "Confidence",
@@ -58,8 +60,7 @@ export default function UploadImages() {
             setLoadingModel(false)
         };
         const getClassLabels = async () => {
-            const testLabel = ["awe", "anger", "amusement", "contentment", "disgust",
-                "fear", "sadness", "excitement"]
+            const testLabel = ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness']
             setClassLabels(testLabel);
         };
         loadModel();
@@ -92,11 +93,10 @@ export default function UploadImages() {
     };
 
 
-
     const handleImageChange = async (files) => {
         if (files.length === 0) {
-            setConfidence(null);
-            setPredictedClass(null);
+            setConfidenceState(null);
+            setPredictedClassState(null);
         }
         if (files.length === 1) {
             setImages(files)
@@ -128,8 +128,7 @@ export default function UploadImages() {
                 const test = await axios("https://aav-processing.herokuapp.com/")
 
                 setMlData({
-                    labels: ["awe", "anger", "amusement", "contentment", "disgust",
-                        "fear", "sadness", "excitement"],
+                    labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
                     datasets: [
                         {
                             label: "Confidence",
@@ -141,8 +140,7 @@ export default function UploadImages() {
                     ]
                 })
                 setIpData({
-                    labels: ["awe", "anger", "amusement", "contentment", "disgust",
-                        "fear", "sadness", "excitement"],
+                    labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
                     datasets: [
                         {
                             label: "Confidence",
@@ -154,16 +152,21 @@ export default function UploadImages() {
                     ]
                 })
                 const confidence = Math.round(predictions[predicted_index] * 100);
-                setPredictedClass(predictedClass);
-                setConfidence(confidence);
+                setConfidenceState(confidence)
+                setPredictedClassState(predictedClass)
                 return [predictedClass, confidence];
             });
-
-            setPredictedClass(predictedClass);
-            setConfidence(confidence);
-            setLoading(false);
+            setConfidenceState(confidence)
+            setPredictedClassState(predictedClass)
         }
+        while(mlData.datasets.length <= 0){
+            console.log(mlData)
+            console.log(ipData)
+            setLoading(true)
+        }
+        setLoading(false);
     };
+
     ChartJS.register(
         CategoryScale,
         LinearScale,
@@ -235,17 +238,20 @@ export default function UploadImages() {
                         {imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc} alt={"current_image"}/>)}
                     </div>
                     <text className={"center"}>CSV Chart is not real data currently! Enjoy some fake data</text>
-
-                    <Stack style={{marginTop: "3em", width: "15rem"}} direction="row" spacing={2}>
+                    <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
                         <Chip
-                            label={predictedClass === null ? "Prediction:" : `Prediction: ${predictedClass}`}
+                            label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassState}`}
                             style={{justifyContent: "left"}}
                             variant="outlined"
+                            alignItems={'center'}
+                            justifyContent={'center'}
                         />
                         <Chip
-                            label={confidence === null ? "Confidence:" : `Confidence: ${confidence}%`}
+                            label={confidenceState === null ? "Confidence:" : `Confidence: ${confidenceState}%`}
                             style={{justifyContent: "left"}}
                             variant="outlined"
+                            alignItems={'center'}
+                            justifyContent={'center'}
                         />
                     </Stack>
                 </Grid>
@@ -257,13 +263,13 @@ export default function UploadImages() {
                         <Bar options={optionsIP} data={ipData}/>
                     </div>
                 </div>
-
+                <a href='https://github.com/AngryAbstractV'>Github Repo</a>
+                <text>AAV-Team for CS4360</text>
             </Grid>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loading}>
                 {loadingModel ? "Loading Model" : "Using Model"}
                 <CircularProgress color="inherit"/>
             </Backdrop>
-            <text className={"center"}>AAV-Team for CS4360</text>
         </Fragment>
     );
 }
