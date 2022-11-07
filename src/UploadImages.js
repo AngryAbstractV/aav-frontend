@@ -110,7 +110,7 @@ export default function UploadImages() {
             // const response = await fetch('http://127.0.0.1:5000/upload', {
             // method: 'POST',
             // body: formData})
-            let response = await axios('"https://aav-processing.herokuapp.com/upload', {
+            let response = await axios('https://aav-processing.herokuapp.com/upload', {
                 method: 'POST',
                 data: formData
             })
