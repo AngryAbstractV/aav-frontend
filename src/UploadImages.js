@@ -17,6 +17,7 @@ export default function UploadImages() {
     const [loading, setLoading] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
+    const [apiScores, setApiScores] = useState(null)
 
     const [mlData, setMlData] = useState({
 
@@ -111,10 +112,11 @@ export default function UploadImages() {
             // method: 'POST',
             // body: formData})
             console.log("starting response")
-            let response = await axios('http://54.187.160.88/upload', {
+            let response = await axios('https://aav-processing.herokuapp.com/upload', {
                 method: 'POST',
                 data: formData
             })
+            setApiScores(response.data)
             console.log(response)
             response = response.data
             console.log("test")
@@ -218,6 +220,7 @@ export default function UploadImages() {
 
     return (
         <Fragment>
+
             <Grid container className="App" direction="column" alignItems="center" justifyContent="center"
                   marginTop="5%">
                 <Grid item>
@@ -251,6 +254,7 @@ export default function UploadImages() {
                             alignItems={'center'}
                             justifyContent={'center'}
                         />
+                        <text>{apiScores}</text>
                     </Stack>
                 </Grid>
                 <div className={"center"}>
