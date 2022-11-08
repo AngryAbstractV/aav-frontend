@@ -111,7 +111,7 @@ export default function UploadImages() {
             // method: 'POST',
             // body: formData})
             console.log("starting response")
-            let response = await axios('http://54.187.160.88/upload', {
+            let response = await axios('https://54.187.160.88/upload', {
                 method: 'POST',
                 data: formData
             })
