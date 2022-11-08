@@ -12,9 +12,9 @@ export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
     const [images, setImages] = useState([]);
-    const [loadingModel, setLoadingModel] = useState(false)
     const [imageURLs, setImageURLs] = useState([])
-    const [loading, setLoading] = useState(false);
+    const [loadingModel, setLoadingModel] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
     const [apiScores, setApiScores] = useState(null)
@@ -53,12 +53,11 @@ export default function UploadImages() {
     useEffect(() => {
         const loadModel = async () => {
             setLoadingModel(true)
-            setLoading(true)
             const model_url = "https://paintingemotion.s3.us-west-2.amazonaws.com/model.json";
             const model = await tf.loadLayersModel(model_url);
             setModel(model);
-            setLoading(false)
             setLoadingModel(false)
+
         };
         const getClassLabels = async () => {
             const testLabel = ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness']
@@ -72,6 +71,7 @@ export default function UploadImages() {
         const newImageUrls = [];
         images.forEach(image => newImageUrls.push(URL.createObjectURL(image)))
         setImageURLs(newImageUrls)
+
     },[images]);
 
 
@@ -100,17 +100,13 @@ export default function UploadImages() {
             setPredictedClassState(null);
         }
         if (files.length === 1) {
+            setLoadingData(true)
             setImages(files)
-            setLoading(true);
             const imageSrc = await readImageFile(files[0]);
             const image = await createHTMLImageElement(imageSrc);
 
-            /* Testing api */
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
-            // const response = await fetch('http://127.0.0.1:5000/upload', {
-            // method: 'POST',
-            // body: formData})
             console.log("starting response")
             let response = await axios('https://aav-processing.herokuapp.com/upload', {
                 method: 'POST',
@@ -118,11 +114,7 @@ export default function UploadImages() {
             })
             setApiScores(response.data)
             console.log(response)
-            response = response.data
-            console.log("test")
 
-            console.log(response)
-            
             const [predictedClass, confidence] = tf.tidy(async () => {
                 const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
                 const result = model.predict(tensorImg);
@@ -148,23 +140,23 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
-                            data: test.data.Scores,
+                            data: [.2,.5,.6,.2,.1,.5,.8,.2],
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
                             borderColor: "#02b844",
                         }
                     ]
                 })
+                console.log("hello, before state changes")
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
+                setLoadingData(false)
                 return [predictedClass, confidence];
             });
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
-            setLoading(false);
         }
-        setLoading(false);
     };
 
     ChartJS.register(
@@ -268,8 +260,12 @@ export default function UploadImages() {
                 <a href='https://github.com/AngryAbstractV'>Github Repo</a>
                 <text>AAV-Team for CS4360</text>
             </Grid>
-            <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loading}>
-                {loadingModel ? "Loading Model" : "Using Model"}
+            <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loadingModel}>
+                {'Loading Model'}
+                <CircularProgress color="inherit"/>
+            </Backdrop>
+            <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loadingData}>
+                {'Using Model'}
                 <CircularProgress color="inherit"/>
             </Backdrop>
         </Fragment>
