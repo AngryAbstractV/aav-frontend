@@ -8,6 +8,25 @@ import {Bar} from 'react-chartjs-2';
 import axios from 'axios'
 
 
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
+
 export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
@@ -110,19 +129,43 @@ export default function UploadImages() {
             // const response = await fetch('http://127.0.0.1:5000/upload', {
             // method: 'POST',
             // body: formData})
-            let response = await axios('"https://aav-processing.herokuapp.com/upload', {
+            let response = await axios('http://127.0.0.1:8000/predict', {
                 method: 'POST',
                 data: formData
             })
             response = response.data 
 
             console.log(response)
+
+            let pred = await axios('http://127.0.0.1:8000/upload', {
+                method: 'POST',
+                data: formData
+            })
+            pred = pred.data 
+
+            console.log(pred)
             
             const [predictedClass, confidence] = tf.tidy(async () => {
                 const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
                 const result = model.predict(tensorImg);
                 const predictions = result.dataSync();
-                const predicted_index = result.as1D().argMax().dataSync()[0];
+                response = response.replace('[','');
+                response = response.replace(']','');
+                response = response.split(' ');
+                response = response.map(Number)
+                for( var i = 0; i < response.length; i++){ 
+    
+                    if ( response[i] === 0) { 
+                
+                        response.splice(i, 1); 
+                    }
+                
+                }
+                console.log(response)
+                console.log(predictions)
+                // const predicted_index = result.as1D().argMax().dataSync()[0];
+                const predicted_index = indexOfMax(response);
+                console.log(predicted_index)
                 const predictedClass = classLabels[predicted_index];
 
                 const test = await axios("https://aav-processing.herokuapp.com/")
@@ -132,7 +175,7 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
-                            data: predictions,
+                            data: response,
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
                             borderColor: "#02b844",
@@ -151,7 +194,7 @@ export default function UploadImages() {
                         }
                     ]
                 })
-                const confidence = Math.round(predictions[predicted_index] * 100);
+                const confidence = Math.round(response[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
                 return [predictedClass, confidence];
