@@ -69,20 +69,20 @@ export default function UploadImages() {
 
 
     useEffect(() => {
-        const loadModel = async () => {
-            setLoadingModel(true)
-            setLoading(true)
-            const model_url = "https://paintingemotion.s3.us-west-2.amazonaws.com/model.json";
-            const model = await tf.loadLayersModel(model_url);
-            setModel(model);
-            setLoading(false)
-            setLoadingModel(false)
-        };
+        // const loadModel = async () => {
+        //     setLoadingModel(true)
+        //     setLoading(true)
+        //     const model_url = "https://paintingemotion.s3.us-west-2.amazonaws.com/model.json";
+        //     const model = await tf.loadLayersModel(model_url);
+        //     setModel(model);
+        //     setLoading(false)
+        //     setLoadingModel(false)
+        // };
         const getClassLabels = async () => {
             const testLabel = ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness']
             setClassLabels(testLabel);
         };
-        loadModel();
+        // loadModel();
         getClassLabels();
         if (images.length < 1) {
             return
@@ -126,15 +126,11 @@ export default function UploadImages() {
             /* Testing api */
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
-            // const response = await fetch('http://127.0.0.1:5000/upload', {
-            // method: 'POST',
-            // body: formData})
             let response = await axios('http://127.0.0.1:8000/predict', {
                 method: 'POST',
                 data: formData
             })
             response = response.data 
-
             console.log(response)
 
             let pred = await axios('http://127.0.0.1:8000/upload', {
@@ -146,9 +142,9 @@ export default function UploadImages() {
             console.log(pred)
             
             const [predictedClass, confidence] = tf.tidy(async () => {
-                const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
-                const result = model.predict(tensorImg);
-                const predictions = result.dataSync();
+                // const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
+                // const result = model.predict(tensorImg);
+                // const predictions = result.dataSync();
                 response = response.replace('[','');
                 response = response.replace(']','');
                 response = response.split(' ');
@@ -162,8 +158,7 @@ export default function UploadImages() {
                 
                 }
                 console.log(response)
-                console.log(predictions)
-                // const predicted_index = result.as1D().argMax().dataSync()[0];
+                // console.log(predictions)
                 const predicted_index = indexOfMax(response);
                 console.log(predicted_index)
                 const predictedClass = classLabels[predicted_index];
@@ -182,6 +177,7 @@ export default function UploadImages() {
                         }
                     ]
                 })
+                setLoading(false);
                 setIpData({
                     labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
                     datasets: [
@@ -310,7 +306,7 @@ export default function UploadImages() {
                 <text>AAV-Team for CS4360</text>
             </Grid>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loading}>
-                {loadingModel ? "Loading Model" : "Using Model"}
+                {/* {loadingModel ? "Loading Model" : "Using Model"} */}
                 <CircularProgress color="inherit"/>
             </Backdrop>
         </Fragment>
