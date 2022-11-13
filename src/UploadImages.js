@@ -8,6 +8,24 @@ import {Bar} from 'react-chartjs-2';
 import axios from 'axios'
 
 
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
 export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
@@ -51,19 +69,19 @@ export default function UploadImages() {
 
 
     useEffect(() => {
-        const loadModel = async () => {
-            setLoadingModel(true)
-            const model_url = "https://paintingemotion.s3.us-west-2.amazonaws.com/model.json";
-            const model = await tf.loadLayersModel(model_url);
-            setModel(model);
-            setLoadingModel(false)
+        // const loadModel = async () => {
+        //     setLoadingModel(true)
+        //     const model_url = "https://paintingemotion.s3.us-west-2.amazonaws.com/model.json";
+        //     const model = await tf.loadLayersModel(model_url);
+        //     setModel(model);
+        //     setLoadingModel(false)
 
-        };
+        // };
         const getClassLabels = async () => {
             const testLabel = ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness']
             setClassLabels(testLabel);
         };
-        loadModel();
+        // loadModel();
         getClassLabels();
         if (images.length < 1) {
             return
@@ -107,21 +125,37 @@ export default function UploadImages() {
 
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
-            console.log("starting response")
-            let response = await axios('https://aav-processing.herokuapp.com/upload', {
+            // console.log("starting response")
+            let predictions = await axios('http://127.0.0.1:8000/predict', {
+                method: 'POST',
+                data: formData
+            })
+            predictions = predictions.data
+            // console.log(predictions)
+            let response = await axios('http://127.0.0.1:8000/upload', {
                 method: 'POST',
                 data: formData
             })
             setApiScores(response.data)
-            console.log(response)
+            // console.log(response)
 
             const [predictedClass, confidence] = tf.tidy(async () => {
-                const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
-                const result = model.predict(tensorImg);
-                const predictions = result.dataSync();
-                const predicted_index = result.as1D().argMax().dataSync()[0];
+                // const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
+                // const result = model.predict(tensorImg);
+                // const predictions = result.dataSync();
+                predictions = predictions.replace('[','');
+                predictions = predictions.replace(']','');
+                predictions = predictions.split(' ');
+                predictions = predictions.map(Number)
+                for( var i = 0; i < predictions.length; i++){ 
+                    if ( predictions[i] === 0) { 
+                        predictions.splice(i, 1); 
+                    }
+                }
+                const predicted_index = indexOfMax(predictions);
                 const predictedClass = classLabels[predicted_index];
-
+                // console.log(predictions, predictedClass)
+                setLoadingData(false);
 
                 setMlData({
                     labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
@@ -147,7 +181,7 @@ export default function UploadImages() {
                         }
                     ]
                 })
-                console.log("hello, before state changes")
+                // console.log("hello, before state changes")
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
