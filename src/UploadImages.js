@@ -31,11 +31,12 @@ export default function UploadImages() {
     const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
     const [images, setImages] = useState([]);
-    const [loadingModel, setLoadingModel] = useState(false)
     const [imageURLs, setImageURLs] = useState([])
-    const [loading, setLoading] = useState(false);
+    const [loadingModel, setLoadingModel] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
+    const [apiScores, setApiScores] = useState(null)
 
     const [mlData, setMlData] = useState({
 
@@ -90,6 +91,7 @@ export default function UploadImages() {
         const newImageUrls = [];
         images.forEach(image => newImageUrls.push(URL.createObjectURL(image)))
         setImageURLs(newImageUrls)
+
     },[images]);
 
 
@@ -118,28 +120,23 @@ export default function UploadImages() {
             setPredictedClassState(null);
         }
         if (files.length === 1) {
+            setLoadingData(true)
             setImages(files)
-            setLoading(true);
             const imageSrc = await readImageFile(files[0]);
             const image = await createHTMLImageElement(imageSrc);
 
-            /* Testing api */
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
-            let response = await axios('http://127.0.0.1:8000/predict', {
+            // const response = await fetch('http://127.0.0.1:5000/upload', {
+            // method: 'POST',
+            // body: formData})
+            let response = await axios('"https://aav-processing.herokuapp.com/upload', {
                 method: 'POST',
                 data: formData
             })
             response = response.data 
+
             console.log(response)
-
-            let pred = await axios('http://127.0.0.1:8000/upload', {
-                method: 'POST',
-                data: formData
-            })
-            pred = pred.data 
-
-            console.log(pred)
             
             const [predictedClass, confidence] = tf.tidy(async () => {
                 // const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
@@ -163,7 +160,6 @@ export default function UploadImages() {
                 console.log(predicted_index)
                 const predictedClass = classLabels[predicted_index];
 
-                const test = await axios("https://aav-processing.herokuapp.com/")
 
                 setMlData({
                     labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
@@ -183,7 +179,7 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
-                            data: test.data.Scores,
+                            data: [.2,.5,.6,.2,.1,.5,.8,.2],
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
                             borderColor: "#02b844",
@@ -193,17 +189,12 @@ export default function UploadImages() {
                 const confidence = Math.round(response[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
+                setLoadingData(false)
                 return [predictedClass, confidence];
             });
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
         }
-        while(mlData.datasets.length <= 0){
-            console.log(mlData)
-            console.log(ipData)
-            setLoading(true)
-        }
-        setLoading(false);
     };
 
     ChartJS.register(
@@ -259,6 +250,7 @@ export default function UploadImages() {
 
     return (
         <Fragment>
+
             <Grid container className="App" direction="column" alignItems="center" justifyContent="center"
                   marginTop="5%">
                 <Grid item>
@@ -292,6 +284,7 @@ export default function UploadImages() {
                             alignItems={'center'}
                             justifyContent={'center'}
                         />
+                        <text>{apiScores}</text>
                     </Stack>
                 </Grid>
                 <div className={"center"}>
@@ -306,7 +299,7 @@ export default function UploadImages() {
                 <text>AAV-Team for CS4360</text>
             </Grid>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loading}>
-                {/* {loadingModel ? "Loading Model" : "Using Model"} */}
+                {loadingModel ? "Loading Model" : "Using Model"}
                 <CircularProgress color="inherit"/>
             </Backdrop>
         </Fragment>
