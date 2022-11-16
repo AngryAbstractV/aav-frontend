@@ -27,11 +27,9 @@ function indexOfMax(arr) {
 }
 
 export default function UploadImages() {
-    const [model, setModel] = useState(null);
     const [classLabels, setClassLabels] = useState(null);
     const [images, setImages] = useState([]);
     const [imageURLs, setImageURLs] = useState([])
-    const [loadingModel, setLoadingModel] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
@@ -94,22 +92,10 @@ export default function UploadImages() {
 
 
 
-    const readImageFile = (file) => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(file);
-        });
-    };
 
 
-    const createHTMLImageElement = (imageSrc) => {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.src = imageSrc;
-        });
-    };
+
+
 
 
     const handleImageChange = async (files) => {
@@ -120,8 +106,6 @@ export default function UploadImages() {
         if (files.length === 1) {
             setLoadingData(true)
             setImages(files)
-            const imageSrc = await readImageFile(files[0]);
-            const image = await createHTMLImageElement(imageSrc);
 
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
@@ -294,10 +278,6 @@ export default function UploadImages() {
                 <a href='https://github.com/AngryAbstractV'>Github Repo</a>
                 <text>AAV-Team for CS4360</text>
             </Grid>
-            <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loadingModel}>
-                {'Loading Model'}
-                <CircularProgress color="inherit"/>
-            </Backdrop>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loadingData}>
                 {'Using Model'}
                 <CircularProgress color="inherit"/>
