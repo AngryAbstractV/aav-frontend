@@ -126,13 +126,13 @@ export default function UploadImages() {
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
             // console.log("starting response")
-            let predictions = await axios('http://127.0.0.1:8000/predict', {
+            let predictions = await axios('https://18.144.62.12/predict', {
                 method: 'POST',
                 data: formData
             })
             predictions = predictions.data
             // console.log(predictions)
-            let response = await axios('http://127.0.0.1:8000/upload', {
+            let response = await axios('https://18.144.62.12/upload', {
                 method: 'POST',
                 data: formData
             })
