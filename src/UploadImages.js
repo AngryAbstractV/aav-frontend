@@ -6,25 +6,7 @@ import Dropzone from 'react-dropzone'
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip,} from 'chart.js';
 import {Bar} from 'react-chartjs-2';
 import axios from 'axios'
-
-
-function indexOfMax(arr) {
-    if (arr.length === 0) {
-        return -1;
-    }
-
-    var max = arr[0];
-    var maxIndex = 0;
-
-    for (var i = 1; i < arr.length; i++) {
-        if (arr[i] > max) {
-            maxIndex = i;
-            max = arr[i];
-        }
-    }
-
-    return maxIndex;
-}
+import {indexOfMax, cleanPred} from "./helpers";
 
 export default function UploadImages() {
     const [classLabels, setClassLabels] = useState(null);
@@ -33,6 +15,8 @@ export default function UploadImages() {
     const [loadingData, setLoadingData] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
+    // const [confidenceStateIP, setConfidenceStateIP] = useState(null);
+    // const [predictedClassStateIP, setPredictedClassStateIP] = useState(null);
     const [apiScores, setApiScores] = useState(null)
 
     const [mlData, setMlData] = useState({
@@ -115,7 +99,13 @@ export default function UploadImages() {
                 data: formData
             })
             predictions = predictions.data
-            // console.log(predictions)
+
+            // let predictionsIP = await axios('https://54.219.178.171/predictIP', {
+            //     method: 'POST',
+            //     data: formData
+            // })
+            // predictionsIP = predictionsIP.data
+
             let response = await axios('https://54.219.178.171/process', {
                 method: 'POST',
                 data: formData
@@ -123,20 +113,12 @@ export default function UploadImages() {
             setApiScores(response.data)
 
             const [predictedClass, confidence] = tf.tidy(async () => {
-                // const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
-                // const result = model.predict(tensorImg);
-                // const predictions = result.dataSync();
-                predictions = predictions.replace('[','');
-                predictions = predictions.replace(']','');
-                predictions = predictions.split(' ');
-                predictions = predictions.map(Number)
-                for( var i = 0; i < predictions.length; i++){ 
-                    if ( predictions[i] === 0) { 
-                        predictions.splice(i, 1); 
-                    }
-                }
+                predictions = cleanPred(predictions)
                 const predicted_index = indexOfMax(predictions);
                 const predictedClass = classLabels[predicted_index];
+                // predictionsIP = cleanPred(predictionsIP)
+                // const predicted_indexIP = indexOfMax(predictionsIP)
+                // const predictedClassIP = classLabels[predicted_indexIP]
                 // console.log(predictions, predictedClass)
                 setLoadingData(false);
 
@@ -157,6 +139,7 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
+                            // data: predictionsIP,
                             data: [.2,.5,.6,.2,.1,.5,.8,.2],
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
@@ -168,11 +151,17 @@ export default function UploadImages() {
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
+                // const confidenceIP = Math.round(predictionsIP[predicted_indexIP] * 100);
+                // setConfidenceStateIP(confidenceIP)
+                // setPredictedClassStateIP(predictedClassIP)
                 setLoadingData(false)
+                // add IP to return statement when ready
                 return [predictedClass, confidence];
             });
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
+            // setConfidenceStateIP(confidenceIP)
+            // setPredictedClassStateIP(predictedClassIP)
         }
     };
 
@@ -252,6 +241,7 @@ export default function UploadImages() {
                     </div>
                     <text className={"center"}>CSV Chart is not real data currently! Enjoy some fake data</text>
                     <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
+                        <text>CNN Prediction</text>
                         <Chip
                             label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassState}`}
                             style={{justifyContent: "left"}}
@@ -268,6 +258,24 @@ export default function UploadImages() {
                         />
                         <text>{apiScores}</text>
                     </Stack>
+                    {/* <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
+                        <text>Image Processing Prediction</text>
+                        <Chip
+                            label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassStateIP}`}
+                            style={{justifyContent: "left"}}
+                            variant="outlined"
+                            alignItems={'center'}
+                            justifyContent={'center'}
+                        />
+                        <Chip
+                            label={confidenceState === null ? "Confidence:" : `Confidence: ${confidenceStateIP}%`}
+                            style={{justifyContent: "left"}}
+                            variant="outlined"
+                            alignItems={'center'}
+                            justifyContent={'center'}
+                        />
+                        <text>{apiScores}</text>
+                    </Stack> */}
                 </Grid>
                 <div className={"center"}>
                     <div className={"chart"}>
