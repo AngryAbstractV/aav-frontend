@@ -110,18 +110,17 @@ export default function UploadImages() {
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
             // console.log("starting response")
-            let predictions = await axios('https://18.144.62.12/predict', {
+            let predictions = await axios('https://54.219.178.171/predictNN', {
                 method: 'POST',
                 data: formData
             })
             predictions = predictions.data
             // console.log(predictions)
-            let response = await axios('https://18.144.62.12/upload', {
+            let response = await axios('https://54.219.178.171/process', {
                 method: 'POST',
                 data: formData
             })
             setApiScores(response.data)
-            // console.log(response)
 
             const [predictedClass, confidence] = tf.tidy(async () => {
                 // const tensorImg = tf.browser.fromPixels(image).resizeNearestNeighbor([120, 120]).toFloat().expandDims();
@@ -235,6 +234,9 @@ export default function UploadImages() {
                   marginTop="5%">
                 <Grid item>
                     <h1 style={{textAlign: "center"}}>Emotion Analyzer</h1>
+                    <text>Please follow the </text>
+                    <a href='https://54.219.178.171/'>link</a>
+                    <text> and allow the connection to our api for this app to work</text>
                     <Dropzone multiple={false} onDrop={acceptedFiles => handleImageChange(acceptedFiles)}>
                         {({getRootProps, getInputProps}) => (
                             <section>
