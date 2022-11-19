@@ -9,32 +9,35 @@ form {
     background: #55acf3;
     padding: 1.5em;
     border-radius: 1em;
-    min-height: 100%
-
 }
 .chart {
-    display: inline-flex;
-    horiz-align: center;
-    vertical-align: center;
-    height: 500px;
-    width: 500px;
-    object-fit: contain;
-    min-height: 100%
-
+    max-height: 600px;
+    max-width: 600px;
+    width: 550px;
 }
 
-.chart_container {
-    float: left;
+.warning {
+    background: #ffefbf;
+    border: 1px dashed #fff8b0;
+    text-align: center;
+    padding: 36px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
 }
+
 
 .center {
     display: inline-flex;
-    padding-top: 50px;
-    justify-content: center;
+    padding-top: 30px;
+    justify-content: space-between;
     align-items: center;
     vertical-align: center;
     horiz-align: center;
-    min-height: 100%
+}
+.centerChart {
+    display: flex;
+
 }
 
 
@@ -52,13 +55,10 @@ form {
     font-family: "Montserrat", sans-serif;
     font-size: 12px;
     font-weight: 600;
-    min-height: 100%
 
 }
 
 .fileDrop:hover {
     background: rgb(194, 243, 194);
     border: 1px dashed #333;
-    min-height: 100%
-
 }
