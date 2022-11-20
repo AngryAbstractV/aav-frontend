@@ -231,13 +231,18 @@ export default function UploadImages() {
     return (
         <Fragment>
             <Grid container className="App" direction="column" alignItems="center" justifyContent="center"
-                  marginTop="5%">
+                  marginTop="2%">
                 <div>
                     <Alert severity="warning">
                         <a href='https://3.101.34.157/'>Open this link and give permission to connect
-                        to our EC2 server on AWS in order for our API to work. Your browser will give a security error because our server uses a self-signed certificate. Please follow steps to proceed to the site so that the selected image file can be sent to our API.</a></Alert>
+                        to our EC2 server on AWS in order for our API to work.
+                        </a>
+                        <br/>
+                        <text>Your browser will give a security error because our server uses a self-signed certificate.
+                            Please follow steps to proceed to the site so that the selected image file can be sent to our API.</text>
+                    </Alert>
                 </div>
-                <Grid item>
+                <Grid item style={{paddingBottom: 40}}>
                     <h1 style={{textAlign: "center"}}>Emotion Analyzer</h1>
 
 
@@ -255,7 +260,7 @@ export default function UploadImages() {
                         {imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc} alt={"current_image"}/>)}
                     </div>
                     <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
-                        <text>CNN Prediction</text>
+                        <text style={{paddingRight: 90}}>CNN Prediction</text>
                         <Chip
                             label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassState}`}
                             style={{justifyContent: "left"}}
@@ -301,7 +306,20 @@ export default function UploadImages() {
                         <Bar options={optionsIP} data={ipData}/>
                     </div>
                 </div>
-                <text style={{paddingTop: 50, paddingBottom: 50}}>The goal of this project is to accurately predict the emotion that one might feel from an abstract work of art. Our process uses two models, one that makes a prediction by using a Convolutional Neural Network and one that uses custom algorithms to score the image on movement, emphasis, variety, gradation, balance, and harmony and make a prediction from those scores.</text>
+                <div style={{paddingTop: 50, paddingBottom: 50}}>
+                    <text>
+                        The goal of this project is to accurately predict the emotion that one might feel from an abstract work of art. Our process uses two models
+                    </text>
+                    <br/>
+                    <text>
+                        one that makes a prediction by using a Convolutional Neural Network and one that uses custom algorithms
+                    </text>
+                    <br/>
+                    <text>
+                        to score the image on movement, emphasis, variety, gradation, balance, and harmony and make a prediction from those scores.
+                    </text>
+                </div>
+
 
                 <div style={{border: "1px solid grey", justifyContent: "space-between", alignItems: "center", display: "inline-flex"}}>
                     <ProfileCard img={require('./Images/DanielMartinez.jfif')} name={'Daniel Martinez'}
@@ -310,13 +328,13 @@ export default function UploadImages() {
                     github={"https://github.com/nicolewelch"} linkedIn={"https://www.linkedin.com/in/nicole-welch-36a584206/"}/>
                     <ProfileCard img={require('./Images/LetyFickling.jfif')} name={'Letitia Fickling'}
                     github={"https://github.com/Lfickling"} linkedIn={"https://www.linkedin.com/in/letitiafickling/"}/>
-                    <ProfileCard img={require('.//Images/defaultImg.png')} name={'Sinh Mai'}
+                    <ProfileCard img={require('.//Images/default.png')} name={'Sinh Mai'}
                     github={"https://github.com/SinhMai"} linkedIn={"https://www.linkedin.com/in/sinh-mai-64512018a/"}/>
                     <ProfileCard img={require('./Images/PatrickD.jfif')} name={'Patrick D\'Innocenzo'}
                     github={"https://github.com/pmdino"} linkedIn={"https://www.linkedin.com/in/patrickdinno/"}/>
-                    <ProfileCard img={require('.//Images/defaultImg.png')} name={'Thu Thatch'}
+                    <ProfileCard img={require('.//Images/default.png')} name={'Thu Thatch'}
                     github={"https://github.com/MeeH2"}/>
-                    <ProfileCard img={require('./Images/defaultImg.png')} name={'Ren White'}
+                    <ProfileCard img={require('./Images/default.png')} name={'Ren White'}
                     github={"https://github.com/SerenaWhite"}/>
                 </div>
 
