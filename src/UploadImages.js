@@ -1,12 +1,13 @@
 import React, {Fragment, useEffect, useState} from "react";
 import "./style.css"
 import * as tf from "@tensorflow/tfjs";
-import {Backdrop, Chip, CircularProgress, Grid, Stack} from "@mui/material";
+import {Alert, Backdrop, Chip, CircularProgress, Grid, Stack} from "@mui/material";
 import Dropzone from 'react-dropzone'
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip,} from 'chart.js';
 import {Bar} from 'react-chartjs-2';
 import axios from 'axios'
 import {indexOfMax, cleanPred} from "./helpers";
+import ProfileCard from "./ProfileCard";
 
 export default function UploadImages() {
     const [classLabels, setClassLabels] = useState(null);
@@ -15,16 +16,14 @@ export default function UploadImages() {
     const [loadingData, setLoadingData] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
-    // const [confidenceStateIP, setConfidenceStateIP] = useState(null);
-    // const [predictedClassStateIP, setPredictedClassStateIP] = useState(null);
-    const [apiScores, setApiScores] = useState(null)
+    const [confidenceStateIP, setConfidenceStateIP] = useState(null);
+    const [predictedClassStateIP, setPredictedClassStateIP] = useState(null);
+    // const [apiScores, setApiScores] = useState(null)
+
+
 
     const [mlData, setMlData] = useState({
-
-
-
         labels: ['amusement', 'anger', 'awe', 'contentment', 'disgust', 'excitement', 'fear', 'sadness'],
-
         datasets: [
             {
                 label: "Confidence",
@@ -82,10 +81,13 @@ export default function UploadImages() {
 
 
 
+
     const handleImageChange = async (files) => {
         if (files.length === 0) {
             setConfidenceState(null);
             setPredictedClassState(null);
+            setConfidenceStateIP(null);
+            setPredictedClassStateIP(null);
         }
         if (files.length === 1) {
             setLoadingData(true)
@@ -94,31 +96,34 @@ export default function UploadImages() {
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
             // console.log("starting response")
-            let predictions = await axios('https://54.219.178.171/predictNN', {
+            // let predictions = await axios('http://127.0.0.1:8000/predictNN', {
+            let predictions = await axios('https://3.101.34.157/predictNN', {
                 method: 'POST',
                 data: formData
             })
             predictions = predictions.data
 
-            // let predictionsIP = await axios('https://54.219.178.171/predictIP', {
-            //     method: 'POST',
-            //     data: formData
-            // })
-            // predictionsIP = predictionsIP.data
-
-            let response = await axios('https://54.219.178.171/process', {
+            // let predictionsIP = await axios('http://127.0.0.1:8000/predictIP', {
+            let predictionsIP = await axios('https://3.101.34.157/predictIP', {
                 method: 'POST',
                 data: formData
             })
-            setApiScores(response.data)
+            predictionsIP = predictionsIP.data
+            // console.log(predictionsIP)
 
-            const [predictedClass, confidence] = tf.tidy(async () => {
+            // let response = await axios('http://127.0.0.1:8000/process', {
+            // // let response = await axios('https://3.101.34.157/process', {
+            //     method: 'POST',
+            //     data: formData
+            // })
+
+            const [predictedClass, confidence, predictedClassIP, confidenceIP] = tf.tidy(async () => {
                 predictions = cleanPred(predictions)
                 const predicted_index = indexOfMax(predictions);
                 const predictedClass = classLabels[predicted_index];
-                // predictionsIP = cleanPred(predictionsIP)
-                // const predicted_indexIP = indexOfMax(predictionsIP)
-                // const predictedClassIP = classLabels[predicted_indexIP]
+                predictionsIP = cleanPred(predictionsIP)
+                const predicted_indexIP = indexOfMax(predictionsIP)
+                const predictedClassIP = classLabels[predicted_indexIP]
                 // console.log(predictions, predictedClass)
                 setLoadingData(false);
 
@@ -139,8 +144,8 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
-                            // data: predictionsIP,
-                            data: [.2,.5,.6,.2,.1,.5,.8,.2],
+                            data: predictionsIP,
+                            // data: [.2,.5,.6,.2,.1,.5,.8,.2],
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
                             borderColor: "#02b844",
@@ -151,17 +156,17 @@ export default function UploadImages() {
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
-                // const confidenceIP = Math.round(predictionsIP[predicted_indexIP] * 100);
-                // setConfidenceStateIP(confidenceIP)
-                // setPredictedClassStateIP(predictedClassIP)
+                const confidenceIP = Math.round(predictionsIP[predicted_indexIP] * 100);
+                setConfidenceStateIP(confidenceIP)
+                setPredictedClassStateIP(predictedClassIP)
                 setLoadingData(false)
                 // add IP to return statement when ready
-                return [predictedClass, confidence];
+                return [predictedClass, confidence, predictedClassIP, confidenceIP];
             });
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
-            // setConfidenceStateIP(confidenceIP)
-            // setPredictedClassStateIP(predictedClassIP)
+            setConfidenceStateIP(confidenceIP)
+            setPredictedClassStateIP(predictedClassIP)
         }
     };
 
@@ -209,23 +214,38 @@ export default function UploadImages() {
             },
             title: {
                 display: true,
-                text: "CSV Model",
+                text: "Image Processing Model",
             },
+        },
+        layout: {
+            padding: {
+                bottom: 0
+            }
+
         },
         maintainAspectRatio: true,
         margin: 0
     };
 
+
     return (
         <Fragment>
-
             <Grid container className="App" direction="column" alignItems="center" justifyContent="center"
-                  marginTop="5%">
-                <Grid item>
+                  marginTop="2%">
+                <div>
+                    <Alert severity="warning">
+                        <a href='https://3.101.34.157/'>Open this link and give permission to connect
+                        to our EC2 server on AWS in order for our API to work.
+                        </a>
+                        <br/>
+                        <text>Your browser will give a security error because our server uses a self-signed certificate.
+                            Please follow steps to proceed to the site so that the selected image file can be sent to our API.</text>
+                    </Alert>
+                </div>
+                <Grid item style={{paddingBottom: 40}}>
                     <h1 style={{textAlign: "center"}}>Emotion Analyzer</h1>
-                    <text>Please follow the </text>
-                    <a href='https://54.219.178.171/'>link</a>
-                    <text> and allow the connection to our api for this app to work</text>
+
+
                     <Dropzone multiple={false} onDrop={acceptedFiles => handleImageChange(acceptedFiles)}>
                         {({getRootProps, getInputProps}) => (
                             <section>
@@ -239,9 +259,8 @@ export default function UploadImages() {
                     <div>
                         {imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc} alt={"current_image"}/>)}
                     </div>
-                    <text className={"center"}>CSV Chart is not real data currently! Enjoy some fake data</text>
                     <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
-                        <text>CNN Prediction</text>
+                        <text style={{paddingRight: 90}}>CNN Prediction</text>
                         <Chip
                             label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassState}`}
                             style={{justifyContent: "left"}}
@@ -256,9 +275,10 @@ export default function UploadImages() {
                             alignItems={'center'}
                             justifyContent={'center'}
                         />
-                        <text>{apiScores}</text>
                     </Stack>
-                    {/* <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
+
+
+                    <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
                         <text>Image Processing Prediction</text>
                         <Chip
                             label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassStateIP}`}
@@ -274,10 +294,11 @@ export default function UploadImages() {
                             alignItems={'center'}
                             justifyContent={'center'}
                         />
-                        <text>{apiScores}</text>
-                    </Stack> */}
+                        {/* <text>{apiScores}</text> */}
+                    </Stack>
                 </Grid>
-                <div className={"center"}>
+
+                <div className={"centerChart"}>
                     <div className={"chart"}>
                         <Bar options={optionsML} data={mlData}/>
                     </div>
@@ -285,11 +306,44 @@ export default function UploadImages() {
                         <Bar options={optionsIP} data={ipData}/>
                     </div>
                 </div>
+                <div style={{paddingTop: 50, paddingBottom: 50}}>
+                    <text>
+                        The goal of this project is to accurately predict the emotion that one might feel from an abstract work of art. Our process uses two models
+                    </text>
+                    <br/>
+                    <text>
+                        one that makes a prediction by using a Convolutional Neural Network and one that uses custom algorithms
+                    </text>
+                    <br/>
+                    <text>
+                        to score the image on movement, emphasis, variety, gradation, balance, and harmony and make a prediction from those scores.
+                    </text>
+                </div>
+
+
+                <div style={{border: "1px solid grey", justifyContent: "space-between", alignItems: "center", display: "inline-flex"}}>
+                    <ProfileCard img={require('./Images/DanielMartinez.jfif')} name={'Daniel Martinez'}
+                    github={"https://github.com/OutbreakSource"} linkedIn={"https://www.linkedin.com/in/daniel-martinez-8823b21a7/"}/>
+                    <ProfileCard img={require('./Images/NicoleWelch.jfif')} name={'Nicole Welch'}
+                    github={"https://github.com/nicolewelch"} linkedIn={"https://www.linkedin.com/in/nicole-welch-36a584206/"}/>
+                    <ProfileCard img={require('./Images/LetyFickling.jfif')} name={'Letitia Fickling'}
+                    github={"https://github.com/Lfickling"} linkedIn={"https://www.linkedin.com/in/letitiafickling/"}/>
+                    <ProfileCard img={require('.//Images/default.png')} name={'Sinh Mai'}
+                    github={"https://github.com/SinhMai"} linkedIn={"https://www.linkedin.com/in/sinh-mai-64512018a/"}/>
+                    <ProfileCard img={require('./Images/PatrickD.jfif')} name={'Patrick D\'Innocenzo'}
+                    github={"https://github.com/pmdino"} linkedIn={"https://www.linkedin.com/in/patrickdinno/"}/>
+                    <ProfileCard img={require('.//Images/default.png')} name={'Thu Thatch'}
+                    github={"https://github.com/MeeH2"}/>
+                    <ProfileCard img={require('./Images/default.png')} name={'Ren White'}
+                    github={"https://github.com/SerenaWhite"}/>
+                </div>
+
+
                 <a href='https://github.com/AngryAbstractV'>Github Repo</a>
                 <text>AAV-Team for CS4360</text>
             </Grid>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loadingData}>
-                {'Using Model'}
+                {'Using Model '}
                 <CircularProgress color="inherit"/>
             </Backdrop>
         </Fragment>
