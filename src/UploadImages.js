@@ -16,9 +16,9 @@ export default function UploadImages() {
     const [loadingData, setLoadingData] = useState(false);
     const [confidenceState, setConfidenceState] = useState(null);
     const [predictedClassState, setPredictedClassState] = useState(null);
-    // const [confidenceStateIP, setConfidenceStateIP] = useState(null);
-    // const [predictedClassStateIP, setPredictedClassStateIP] = useState(null);
-    const [apiScores, setApiScores] = useState(null)
+    const [confidenceStateIP, setConfidenceStateIP] = useState(null);
+    const [predictedClassStateIP, setPredictedClassStateIP] = useState(null);
+    // const [apiScores, setApiScores] = useState(null)
 
 
 
@@ -86,6 +86,8 @@ export default function UploadImages() {
         if (files.length === 0) {
             setConfidenceState(null);
             setPredictedClassState(null);
+            setConfidenceStateIP(null);
+            setPredictedClassStateIP(null);
         }
         if (files.length === 1) {
             setLoadingData(true)
@@ -94,31 +96,34 @@ export default function UploadImages() {
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
             // console.log("starting response")
-            let predictions = await axios('https://54.219.178.171/predictNN', {
+            let predictions = await axios('http://127.0.0.1:8000/predictNN', {
+            // let predictions = await axios('https://54.219.178.171/predictNN', {
                 method: 'POST',
                 data: formData
             })
             predictions = predictions.data
 
+            let predictionsIP = await axios('http://127.0.0.1:8000/predictIP', {
             // let predictionsIP = await axios('https://54.219.178.171/predictIP', {
-            //     method: 'POST',
-            //     data: formData
-            // })
-            // predictionsIP = predictionsIP.data
-
-            let response = await axios('https://54.219.178.171/process', {
                 method: 'POST',
                 data: formData
             })
-            setApiScores(response.data)
+            predictionsIP = predictionsIP.data
+            // console.log(predictionsIP)
 
-            const [predictedClass, confidence] = tf.tidy(async () => {
+            // let response = await axios('http://127.0.0.1:8000/process', {
+            // // let response = await axios('https://54.219.178.171/process', {
+            //     method: 'POST',
+            //     data: formData
+            // })
+
+            const [predictedClass, confidence, predictedClassIP, confidenceIP] = tf.tidy(async () => {
                 predictions = cleanPred(predictions)
                 const predicted_index = indexOfMax(predictions);
                 const predictedClass = classLabels[predicted_index];
-                // predictionsIP = cleanPred(predictionsIP)
-                // const predicted_indexIP = indexOfMax(predictionsIP)
-                // const predictedClassIP = classLabels[predicted_indexIP]
+                predictionsIP = cleanPred(predictionsIP)
+                const predicted_indexIP = indexOfMax(predictionsIP)
+                const predictedClassIP = classLabels[predicted_indexIP]
                 // console.log(predictions, predictedClass)
                 setLoadingData(false);
 
@@ -139,8 +144,8 @@ export default function UploadImages() {
                     datasets: [
                         {
                             label: "Confidence",
-                            // data: predictionsIP,
-                            data: [.2,.5,.6,.2,.1,.5,.8,.2],
+                            data: predictionsIP,
+                            // data: [.2,.5,.6,.2,.1,.5,.8,.2],
                             fill: true,
                             backgroundColor: "rgba(6, 156,51, .3)",
                             borderColor: "#02b844",
@@ -151,17 +156,17 @@ export default function UploadImages() {
                 const confidence = Math.round(predictions[predicted_index] * 100);
                 setConfidenceState(confidence)
                 setPredictedClassState(predictedClass)
-                // const confidenceIP = Math.round(predictionsIP[predicted_indexIP] * 100);
-                // setConfidenceStateIP(confidenceIP)
-                // setPredictedClassStateIP(predictedClassIP)
+                const confidenceIP = Math.round(predictionsIP[predicted_indexIP] * 100);
+                setConfidenceStateIP(confidenceIP)
+                setPredictedClassStateIP(predictedClassIP)
                 setLoadingData(false)
                 // add IP to return statement when ready
-                return [predictedClass, confidence];
+                return [predictedClass, confidence, predictedClassIP, confidenceIP];
             });
             setConfidenceState(confidence)
             setPredictedClassState(predictedClass)
-            // setConfidenceStateIP(confidenceIP)
-            // setPredictedClassStateIP(predictedClassIP)
+            setConfidenceStateIP(confidenceIP)
+            setPredictedClassStateIP(predictedClassIP)
         }
     };
 
@@ -209,7 +214,7 @@ export default function UploadImages() {
             },
             title: {
                 display: true,
-                text: "CSV Model",
+                text: "Image Processing Model",
             },
         },
         layout: {
@@ -268,7 +273,7 @@ export default function UploadImages() {
                     </Stack>
 
 
-                    {/* <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
+                    <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
                         <text>Image Processing Prediction</text>
                         <Chip
                             label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassStateIP}`}
@@ -284,8 +289,8 @@ export default function UploadImages() {
                             alignItems={'center'}
                             justifyContent={'center'}
                         />
-                        <text>{apiScores}</text>
-                    </Stack> */}
+                        {/* <text>{apiScores}</text> */}
+                    </Stack>
                 </Grid>
 
                 <div className={"centerChart"}>
