@@ -96,15 +96,15 @@ export default function UploadImages() {
             let formData = new FormData();
             formData.append("file", files[0] ? files[0] : null);
             // console.log("starting response")
-            let predictions = await axios('http://127.0.0.1:8000/predictNN', {
-            // let predictions = await axios('https://54.219.178.171/predictNN', {
+            // let predictions = await axios('http://127.0.0.1:8000/predictNN', {
+            let predictions = await axios('https://54.219.178.171/predictNN', {
                 method: 'POST',
                 data: formData
             })
             predictions = predictions.data
 
-            let predictionsIP = await axios('http://127.0.0.1:8000/predictIP', {
-            // let predictionsIP = await axios('https://54.219.178.171/predictIP', {
+            // let predictionsIP = await axios('http://127.0.0.1:8000/predictIP', {
+            let predictionsIP = await axios('https://54.219.178.171/predictIP', {
                 method: 'POST',
                 data: formData
             })
@@ -235,7 +235,7 @@ export default function UploadImages() {
                 <div>
                     <Alert severity="warning">
                         <a href='https://54.219.178.171/'>Open this link and give permission to connect
-                        to our EC2 server on AWS in order for our API to work</a></Alert>
+                        to our EC2 server on AWS in order for our API to work. Your browser will give a security error because our server uses a self-signed certificate. Please allow the connection so that the selected image file can be sent to our API.</a></Alert>
                 </div>
                 <Grid item>
                     <h1 style={{textAlign: "center"}}>Emotion Analyzer</h1>
@@ -301,7 +301,7 @@ export default function UploadImages() {
                         <Bar options={optionsIP} data={ipData}/>
                     </div>
                 </div>
-                <text style={{paddingTop: 50, paddingBottom: 50}}>Desc</text>
+                <text style={{paddingTop: 50, paddingBottom: 50}}>The goal of this project is to accurately predict the emotion that one might feel from an abstract work of art. Our process uses two models, one that makes a prediction by using a Convolutional Neural Network and one that uses custom algorithms to score the image on movement, emphasis, variety, gradation, balance, and harmony and make a prediction from those scores.</text>
 
                 <div style={{border: "1px solid grey", justifyContent: "space-between", alignItems: "center", display: "inline-flex"}}>
                     <ProfileCard img={require('./Images/DanielMartinez.jfif')} name={'Daniel Martinez'}
