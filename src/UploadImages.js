@@ -97,14 +97,14 @@ export default function UploadImages() {
             formData.append("file", files[0] ? files[0] : null);
             // console.log("starting response")
             // let predictions = await axios('http://127.0.0.1:8000/predictNN', {
-            let predictions = await axios('https://54.219.178.171/predictNN', {
+            let predictions = await axios('https://3.101.34.157/predictNN', {
                 method: 'POST',
                 data: formData
             })
             predictions = predictions.data
 
             // let predictionsIP = await axios('http://127.0.0.1:8000/predictIP', {
-            let predictionsIP = await axios('https://54.219.178.171/predictIP', {
+            let predictionsIP = await axios('https://3.101.34.157/predictIP', {
                 method: 'POST',
                 data: formData
             })
@@ -112,7 +112,7 @@ export default function UploadImages() {
             // console.log(predictionsIP)
 
             // let response = await axios('http://127.0.0.1:8000/process', {
-            // // let response = await axios('https://54.219.178.171/process', {
+            // // let response = await axios('https://3.101.34.157/process', {
             //     method: 'POST',
             //     data: formData
             // })
@@ -234,8 +234,8 @@ export default function UploadImages() {
                   marginTop="5%">
                 <div>
                     <Alert severity="warning">
-                        <a href='https://54.219.178.171/'>Open this link and give permission to connect
-                        to our EC2 server on AWS in order for our API to work. Your browser will give a security error because our server uses a self-signed certificate. Please allow the connection so that the selected image file can be sent to our API.</a></Alert>
+                        <a href='https://3.101.34.157/'>Open this link and give permission to connect
+                        to our EC2 server on AWS in order for our API to work. Your browser will give a security error because our server uses a self-signed certificate. Please follow steps to proceed to the site so that the selected image file can be sent to our API.</a></Alert>
                 </div>
                 <Grid item>
                     <h1 style={{textAlign: "center"}}>Emotion Analyzer</h1>
