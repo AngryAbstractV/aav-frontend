@@ -74,14 +74,6 @@ export default function UploadImages() {
     },[images]);
 
 
-
-
-
-
-
-
-
-
     const handleImageChange = async (files) => {
         if (files.length === 0) {
             setConfidenceState(null);
@@ -234,7 +226,7 @@ export default function UploadImages() {
                   marginTop="2%">
                 <div>
                     <Alert severity="warning">
-                        <a href='https://3.101.34.157/'>Open this link and give permission to connect
+                        <a href='https://3.101.34.157/' target="_blank" rel="noreferrer noopener">Open this link and give permission to connect
                         to our EC2 server on AWS in order for our API to work.
                         </a>
                         <br/>
@@ -259,43 +251,46 @@ export default function UploadImages() {
                     <div>
                         {imageURLs.map(imageSrc => <img className={"photo"} src={imageSrc} alt={"current_image"}/>)}
                     </div>
-                    <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
-                        <text style={{paddingRight: 90}}>CNN Prediction</text>
-                        <Chip
-                            label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassState}`}
-                            style={{justifyContent: "left"}}
-                            variant="outlined"
-                            alignItems={'center'}
-                            justifyContent={'center'}
-                        />
-                        <Chip
-                            label={confidenceState === null ? "Confidence:" : `Confidence: ${confidenceState}%`}
-                            style={{justifyContent: "left"}}
-                            variant="outlined"
-                            alignItems={'center'}
-                            justifyContent={'center'}
-                        />
-                    </Stack>
+                    <Stack direction={'row'} spacing={25} alignItems={'center'} justifyContent={'center'} marginTop={5}>
+                        <Stack direction={'column'} spacing={2} alignItems={'center'} justifyContent={'center'}>
+                            <text>CNN Prediction</text>
+                            <Chip
+                                label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassState}`}
+                                style={{justifyContent: "left"}}
+                                variant="outlined"
+                                alignItems={'center'}
+                                justifyContent={'center'}
+                            />
+                            <Chip
+                                label={confidenceState === null ? "Confidence:" : `Confidence: ${confidenceState}%`}
+                                style={{justifyContent: "left"}}
+                                variant="outlined"
+                                alignItems={'center'}
+                                justifyContent={'center'}
+                            />
+                        </Stack>
+
+                        <Stack direction={'column'} spacing={2} alignItems={'center'} justifyContent={'center'}>
+                            <text>Image Processing Prediction</text>
+                            <Chip
+                                label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassStateIP}`}
+                                style={{justifyContent: "left"}}
+                                variant="outlined"
+                                alignItems={'center'}
+                                justifyContent={'center'}
+                            />
+                            <Chip
+                                label={confidenceState === null ? "Confidence:" : `Confidence: ${confidenceStateIP}%`}
+                                style={{justifyContent: "left"}}
+                                variant="outlined"
+                                alignItems={'center'}
+                                justifyContent={'center'}
+                            />
+                        </Stack>
 
 
-                    <Stack direction={'row'} spacing={2} alignItems={'center'} justifyContent={'center'} marginTop={5}>
-                        <text>Image Processing Prediction</text>
-                        <Chip
-                            label={predictedClassState === null ? "Prediction:" : `Prediction: ${predictedClassStateIP}`}
-                            style={{justifyContent: "left"}}
-                            variant="outlined"
-                            alignItems={'center'}
-                            justifyContent={'center'}
-                        />
-                        <Chip
-                            label={confidenceState === null ? "Confidence:" : `Confidence: ${confidenceStateIP}%`}
-                            style={{justifyContent: "left"}}
-                            variant="outlined"
-                            alignItems={'center'}
-                            justifyContent={'center'}
-                        />
-                        {/* <text>{apiScores}</text> */}
                     </Stack>
+
                 </Grid>
 
                 <div className={"centerChart"}>
@@ -322,24 +317,24 @@ export default function UploadImages() {
 
 
                 <div style={{border: "1px solid grey", justifyContent: "space-between", alignItems: "center", display: "inline-flex"}}>
+                    <ProfileCard img={require('./Images/PatrickD.jfif')} name={'Patrick D\'Innocenzo'}
+                                 github={"https://github.com/pmdino"} linkedIn={"https://www.linkedin.com/in/patrickdinno/"}/>
+                    <ProfileCard img={require('./Images/LetyFickling.jfif')} name={'Letitia Fickling'}
+                                 github={"https://github.com/Lfickling"} linkedIn={"https://www.linkedin.com/in/letitiafickling/"}/>
+                    <ProfileCard img={require('.//Images/default.png')} name={'Sinh Mai'}
+                                 github={"https://github.com/SinhMai"} linkedIn={"https://www.linkedin.com/in/sinh-mai-64512018a/"}/>
                     <ProfileCard img={require('./Images/DanielMartinez.jfif')} name={'Daniel Martinez'}
                     github={"https://github.com/OutbreakSource"} linkedIn={"https://www.linkedin.com/in/daniel-martinez-8823b21a7/"}/>
+                    <ProfileCard img={require('.//Images/default.png')} name={'Thu Thatch'}
+                                 github={"https://github.com/MeeH2"}/>
                     <ProfileCard img={require('./Images/NicoleWelch.jfif')} name={'Nicole Welch'}
                     github={"https://github.com/nicolewelch"} linkedIn={"https://www.linkedin.com/in/nicole-welch-36a584206/"}/>
-                    <ProfileCard img={require('./Images/LetyFickling.jfif')} name={'Letitia Fickling'}
-                    github={"https://github.com/Lfickling"} linkedIn={"https://www.linkedin.com/in/letitiafickling/"}/>
-                    <ProfileCard img={require('.//Images/default.png')} name={'Sinh Mai'}
-                    github={"https://github.com/SinhMai"} linkedIn={"https://www.linkedin.com/in/sinh-mai-64512018a/"}/>
-                    <ProfileCard img={require('./Images/PatrickD.jfif')} name={'Patrick D\'Innocenzo'}
-                    github={"https://github.com/pmdino"} linkedIn={"https://www.linkedin.com/in/patrickdinno/"}/>
-                    <ProfileCard img={require('.//Images/default.png')} name={'Thu Thatch'}
-                    github={"https://github.com/MeeH2"}/>
-                    <ProfileCard img={require('./Images/default.png')} name={'Ren White'}
-                    github={"https://github.com/SerenaWhite"}/>
+                    <ProfileCard img={require('./Images/RenWhite.jfif')} name={'Ren White'}
+                    github={"https://github.com/SerenaWhite"} linkedIn={'https://www.linkedin.com/in/ren-white/'}/>
                 </div>
 
 
-                <a href='https://github.com/AngryAbstractV'>Github Repo</a>
+                <a href='https://github.com/AngryAbstractV' target="_blank" rel="noreferrer noopener">Github Repo</a>
                 <text>AAV-Team for CS4360</text>
             </Grid>
             <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}} open={loadingData}>
