@@ -11,9 +11,9 @@ function ProfileCard(props) {
                 {props.name} <span className="normal-text">{props.age}</span>
             </h1>
             <div className="social-container">
-                <a href={props.github}>Github</a>
+                <a href={props.github} target="_blank" rel="noreferrer noopener">Github</a>
                 <br/>
-                <a href={props.linkedIn}>LinkedIn</a>
+                <a href={props.linkedIn} target="_blank" rel="noreferrer noopener">LinkedIn</a>
             </div>
         </div>
     );
