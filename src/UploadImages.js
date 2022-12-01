@@ -321,7 +321,7 @@ export default function UploadImages() {
                                  github={"https://github.com/pmdino"} linkedIn={"https://www.linkedin.com/in/patrickdinno/"}/>
                     <ProfileCard img={require('./Images/LetyFickling.jfif')} name={'Letitia Fickling'}
                                  github={"https://github.com/Lfickling"} linkedIn={"https://www.linkedin.com/in/letitiafickling/"}/>
-                    <ProfileCard img={require('.//Images/default.png')} name={'Sinh Mai'}
+                    <ProfileCard img={require('.//Images/SinhMai.png')} name={'Sinh Mai'}
                                  github={"https://github.com/SinhMai"} linkedIn={"https://www.linkedin.com/in/sinh-mai-64512018a/"}/>
                     <ProfileCard img={require('./Images/DanielMartinez.jfif')} name={'Daniel Martinez'}
                     github={"https://github.com/OutbreakSource"} linkedIn={"https://www.linkedin.com/in/daniel-martinez-8823b21a7/"}/>
